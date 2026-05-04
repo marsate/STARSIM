@@ -81,16 +81,49 @@ class _PrimaryPageState extends State<PrimaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(24),
-      child: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Container(
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Center(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color.fromRGBO(23, 23, 23, 0.8),
+                            Color.fromRGBO(23, 23, 23, 0.4),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Color.fromRGBO(60, 60, 67, 0.29),
+                          width: 0.74,
+                          style: BorderStyle.solid,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.25),
+                            blurRadius: 50,
+                            offset: Offset(0, 25),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: pages[selectedIndex],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -98,8 +131,8 @@ class _PrimaryPageState extends State<PrimaryPage> {
                           Color.fromRGBO(23, 23, 23, 0.8),
                           Color.fromRGBO(23, 23, 23, 0.4),
                         ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
                       ),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
@@ -116,74 +149,43 @@ class _PrimaryPageState extends State<PrimaryPage> {
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: pages[selectedIndex],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromRGBO(23, 23, 23, 0.8),
-                        Color.fromRGBO(23, 23, 23, 0.4),
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Color.fromRGBO(60, 60, 67, 0.29),
-                      width: 0.74,
-                      style: BorderStyle.solid,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.25),
-                        blurRadius: 50,
-                        offset: Offset(0, 25),
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          navItem(
+                            label: "Home",
+                            iconPath: "assets/icons/home.svg",
+                            index: 0,
+                          ),
+                          navItem(
+                            label: "Store",
+                            iconPath: "assets/icons/store.svg",
+                            index: 1,
+                          ),
+                          navItem(
+                            label: "Charts",
+                            iconPath: "assets/icons/charts.svg",
+                            index: 2,
+                          ),
+                          navItem(
+                            label: "Profile",
+                            iconPath: "assets/icons/profile.svg",
+                            index: 3,
+                          ),
+                          navItem(
+                            label: "Settings",
+                            iconPath: "assets/icons/settings.svg",
+                            index: 4,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        navItem(
-                          label: "Home",
-                          iconPath: "assets/icons/home.svg",
-                          index: 0,
-                        ),
-                        navItem(
-                          label: "Store",
-                          iconPath: "assets/icons/store.svg",
-                          index: 1,
-                        ),
-                        navItem(
-                          label: "Charts",
-                          iconPath: "assets/icons/charts.svg",
-                          index: 2,
-                        ),
-                        navItem(
-                          label: "Profile",
-                          iconPath: "assets/icons/profile.svg",
-                          index: 3,
-                        ),
-                        navItem(
-                          label: "Settings",
-                          iconPath: "assets/icons/settings.svg",
-                          index: 4,
-                        ),
-                      ],
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
