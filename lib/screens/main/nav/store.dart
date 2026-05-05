@@ -17,7 +17,7 @@ class _StorePageState extends State<StorePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SvgPicture.asset(
-          'assets/icons/store.svg',
+          'assets/icons/store/store.svg',
           height: 64,
           width: 64,
           fit: BoxFit.contain,

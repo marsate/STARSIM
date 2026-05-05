@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^8.0.2
   flutter_svg: ^2.2.4
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
+  cloud_firestore: ^6.3.0
 
 dev_dependencies:
   flutter_test:
@@ -62,26 +65,40 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo.png
-    - assets/icons/money.svg
+    
+    - assets/icons/authentication/email.svg
+    - assets/icons/authentication/password.svg
+    - assets/icons/authentication/code.svg
 
-    - assets/icons/email.svg
-    - assets/icons/password.svg
-    - assets/icons/code.svg
-    - assets/icons/star.svg
+    - assets/icons/charts/charts.svg
 
-    - assets/icons/home.svg
-    - assets/icons/songs.svg
-    - assets/icons/album.svg
-    - assets/icons/promote.svg
-    - assets/icons/streaming.svg
+    - assets/icons/general/bell.svg
+    - assets/icons/general/briefcase.svg
+    - assets/icons/general/star.svg
+    - assets/icons/general/money.svg
 
-    - assets/icons/store.svg
-    - assets/icons/charts.svg
-    - assets/icons/profile.svg
-    - assets/icons/settings.svg
+    - assets/icons/home/home.svg
+    - assets/icons/home/songs.svg
+    - assets/icons/home/album.svg
+    - assets/icons/home/promote.svg
+    - assets/icons/home/streaming.svg
+    - assets/icons/home/sell.svg
+    - assets/icons/home/record_song.svg
+    - assets/icons/home/release_song.svg
+    - assets/icons/home/alternatives_album.svg
+    - assets/icons/home/radio.svg
+    - assets/icons/home/billboards.svg
+    - assets/icons/home/opportunities.svg
+    - assets/icons/home/vibely.svg
+    - assets/icons/home/meloflow.svg
+    - assets/icons/home/sonicflow.svg
+    - assets/icons/home/velor.svg
 
-    - assets/icons/briefcase.svg
-    - assets/icons/bell.svg
+    - assets/icons/profile/profile.svg
+
+    - assets/icons/settings/settings.svg
+
+    - assets/icons/store/store.svg
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

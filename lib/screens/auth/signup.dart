@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +22,66 @@ class _SignUpPageState extends State<SignUpPage> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _codeFocus = FocusNode();
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
+
+  bool _loading = false;
+  String? _errorMessage;
+
+  Future<void> _signUp() async {
+    setState(() {
+      _errorMessage = null;
+      _loading = true;
+    });
+
+    try {
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+      final code = codeController.text.trim();
+
+      if (email.isEmpty || password.isEmpty) {
+        setState(() {
+          _errorMessage = "Email and password are required";
+          _loading = false;
+        });
+        return;
+      }
+
+      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final uid = cred.user!.uid;
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+        'referralCodeUsed': code.isNotEmpty ? code : null,
+        'referredBy': null,
+        'artistName': null,
+      });
+
+      widget.onLoginSuccess();
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message ?? "Sign up failed";
+      });
+    } catch (e, stack) {
+      debugPrint("SIGNUP ERROR: $e");
+      debugPrintStack(stackTrace: stack);
+
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+
+    setState(() {
+      _loading = false;
+    });
+  }
 
   @override
   void initState() {
@@ -179,10 +241,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                               child: TextField(
+                                controller: emailController,
                                 focusNode: _emailFocus,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                ),
+                                style: GoogleFonts.inter(color: Colors.white),
                                 decoration: InputDecoration(
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.only(
@@ -192,7 +253,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       right: 9,
                                     ),
                                     child: SvgPicture.asset(
-                                      'assets/icons/email.svg',
+                                      'assets/icons/authentication/email.svg',
                                       width: 20,
                                       height: 20,
                                       fit: BoxFit.contain,
@@ -293,10 +354,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                               child: TextField(
+                                controller: passwordController,
                                 focusNode: _passwordFocus,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                ),
+                                style: GoogleFonts.inter(color: Colors.white),
                                 obscureText: true,
                                 decoration: InputDecoration(
                                   prefixIcon: Padding(
@@ -307,7 +367,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       right: 9,
                                     ),
                                     child: SvgPicture.asset(
-                                      'assets/icons/password.svg',
+                                      'assets/icons/authentication/password.svg',
                                       width: 20,
                                       height: 20,
                                       fit: BoxFit.contain,
@@ -408,10 +468,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                               child: TextField(
+                                controller: codeController,
                                 focusNode: _codeFocus,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                ),
+                                style: GoogleFonts.inter(color: Colors.white),
                                 decoration: InputDecoration(
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.only(
@@ -421,7 +480,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       right: 9,
                                     ),
                                     child: SvgPicture.asset(
-                                      'assets/icons/code.svg',
+                                      'assets/icons/authentication/code.svg',
                                       width: 20,
                                       height: 20,
                                       fit: BoxFit.contain,
@@ -481,9 +540,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              widget.onLoginSuccess();
-                            },
+                            onPressed: _loading ? null : _signUp,
                             style:
                                 ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
@@ -496,7 +553,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       )) {
                                         return Colors.white.withValues(
                                           alpha: 0.2,
-                                        ); // adjust opacity here
+                                        );
                                       }
                                       return Colors.transparent;
                                     },
@@ -504,29 +561,53 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/star.svg',
-                                    fit: BoxFit.contain,
-                                  ),
+                              child: _loading
+                                  ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/icons/general/star.svg',
+                                          fit: BoxFit.contain,
+                                        ),
 
-                                  SizedBox(width: 8),
+                                        SizedBox(width: 8),
 
-                                  Text(
-                                    'Start Your Career',
-                                    style: GoogleFonts.inter(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                        Text(
+                                          'Start Your Career',
+                                          style: GoogleFonts.inter(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
+                        ),
+                        AnimatedSize(
+                          duration: Duration(milliseconds: 200),
+                          child: _errorMessage == null
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
                         ),
                         SizedBox(height: 32),
                         Row(
@@ -539,7 +620,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     colors: [
                                       Color.fromRGBO(64, 32, 64, 0),
                                       Color.fromRGBO(64, 64, 64, 0.5),
-                                      Color.fromRGBO(64, 64, 64, 0)
+                                      Color.fromRGBO(64, 64, 64, 0),
                                     ],
                                   ),
                                 ),
@@ -565,7 +646,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     colors: [
                                       Color.fromRGBO(64, 32, 64, 0),
                                       Color.fromRGBO(64, 64, 64, 0.5),
-                                      Color.fromRGBO(64, 64, 64, 0)
+                                      Color.fromRGBO(64, 64, 64, 0),
                                     ],
                                   ),
                                 ),

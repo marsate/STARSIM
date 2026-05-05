@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SvgPicture.asset(
-          'assets/icons/profile.svg',
+          'assets/icons/profile/profile.svg',
           height: 64,
           width: 64,
           fit: BoxFit.contain,

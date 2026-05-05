@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignInPage extends StatefulWidget {
   final VoidCallback onNavigateToSignUp;
@@ -19,6 +20,24 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  String? _errorMessage;
+  String _mapFirebaseError(String code) {
+    switch (code) {
+      case "user-not-found":
+        return "No account found for this email";
+      case "wrong-password":
+        return "Incorrect password";
+      case "invalid-email":
+        return "Invalid email address";
+      case "user-disabled":
+        return "This account has been disabled";
+      default:
+        return "Login failed. Please try again.";
+    }
+  }
 
   @override
   void initState() {
@@ -172,10 +191,16 @@ class _SignInPageState extends State<SignInPage> {
                                 ),
                               ),
                               child: TextField(
+                                onChanged: (_) {
+                                  if (_errorMessage != null) {
+                                    setState(() {
+                                      _errorMessage = null;
+                                    });
+                                  }
+                                },
+                                controller: emailController,
                                 focusNode: _emailFocus,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                ),
+                                style: GoogleFonts.inter(color: Colors.white),
                                 decoration: InputDecoration(
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.only(
@@ -185,7 +210,7 @@ class _SignInPageState extends State<SignInPage> {
                                       right: 9,
                                     ),
                                     child: SvgPicture.asset(
-                                      'assets/icons/email.svg',
+                                      'assets/icons/authentication/email.svg',
                                       width: 20,
                                       height: 20,
                                       fit: BoxFit.contain,
@@ -246,7 +271,6 @@ class _SignInPageState extends State<SignInPage> {
                               GestureDetector(
                                 onTap: () {
                                   setState(() => _forgotPressed = false);
-                                  // navigate / action
                                 },
                                 onTapDown: (_) {
                                   setState(() => _forgotPressed = true);
@@ -313,10 +337,16 @@ class _SignInPageState extends State<SignInPage> {
                                 ),
                               ),
                               child: TextField(
+                                onChanged: (_) {
+                                  if (_errorMessage != null) {
+                                    setState(() {
+                                      _errorMessage = null;
+                                    });
+                                  }
+                                },
+                                controller: passwordController,
                                 focusNode: _passwordFocus,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                ),
+                                style: GoogleFonts.inter(color: Colors.white),
                                 obscureText: true,
                                 decoration: InputDecoration(
                                   prefixIcon: Padding(
@@ -327,7 +357,7 @@ class _SignInPageState extends State<SignInPage> {
                                       right: 9,
                                     ),
                                     child: SvgPicture.asset(
-                                      'assets/icons/password.svg',
+                                      'assets/icons/authentication/password.svg',
                                       width: 20,
                                       height: 20,
                                       fit: BoxFit.contain,
@@ -387,8 +417,28 @@ class _SignInPageState extends State<SignInPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              widget.onLoginSuccess();
+                            onPressed: () async {
+                              setState(() {
+                                _errorMessage = null;
+                              });
+
+                              try {
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim(),
+                                    );
+
+                                widget.onLoginSuccess();
+                              } on FirebaseAuthException catch (e) {
+                                setState(() {
+                                  _errorMessage = _mapFirebaseError(e.code);
+                                });
+                              } catch (_) {
+                                setState(() {
+                                  _errorMessage = "Something went wrong";
+                                });
+                              }
                             },
                             style:
                                 ElevatedButton.styleFrom(
@@ -402,7 +452,7 @@ class _SignInPageState extends State<SignInPage> {
                                       )) {
                                         return Colors.white.withValues(
                                           alpha: 0.2,
-                                        ); // adjust opacity here
+                                        );
                                       }
                                       return Colors.transparent;
                                     },
@@ -421,6 +471,21 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                           ),
                         ),
+                        AnimatedSize(
+                          duration: Duration(milliseconds: 200),
+                          child: _errorMessage == null
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                        ),
                         SizedBox(height: 32),
                         Row(
                           children: [
@@ -432,7 +497,7 @@ class _SignInPageState extends State<SignInPage> {
                                     colors: [
                                       Color.fromRGBO(64, 32, 64, 0),
                                       Color.fromRGBO(64, 64, 64, 0.5),
-                                      Color.fromRGBO(64, 64, 64, 0)
+                                      Color.fromRGBO(64, 64, 64, 0),
                                     ],
                                   ),
                                 ),
@@ -458,7 +523,7 @@ class _SignInPageState extends State<SignInPage> {
                                     colors: [
                                       Color.fromRGBO(64, 32, 64, 0),
                                       Color.fromRGBO(64, 64, 64, 0.5),
-                                      Color.fromRGBO(64, 64, 64, 0)
+                                      Color.fromRGBO(64, 64, 64, 0),
                                     ],
                                   ),
                                 ),

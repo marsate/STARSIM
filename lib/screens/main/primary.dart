@@ -155,27 +155,27 @@ class _PrimaryPageState extends State<PrimaryPage> {
                         children: [
                           navItem(
                             label: "Home",
-                            iconPath: "assets/icons/home.svg",
+                            iconPath: "assets/icons/home/home.svg",
                             index: 0,
                           ),
                           navItem(
                             label: "Store",
-                            iconPath: "assets/icons/store.svg",
+                            iconPath: "assets/icons/store/store.svg",
                             index: 1,
                           ),
                           navItem(
                             label: "Charts",
-                            iconPath: "assets/icons/charts.svg",
+                            iconPath: "assets/icons/charts/charts.svg",
                             index: 2,
                           ),
                           navItem(
                             label: "Profile",
-                            iconPath: "assets/icons/profile.svg",
+                            iconPath: "assets/icons/profile/profile.svg",
                             index: 3,
                           ),
                           navItem(
                             label: "Settings",
-                            iconPath: "assets/icons/settings.svg",
+                            iconPath: "assets/icons/settings/settings.svg",
                             index: 4,
                           ),
                         ],

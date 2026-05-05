@@ -17,7 +17,7 @@ class _ChartsPageState extends State<ChartsPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SvgPicture.asset(
-          'assets/icons/charts.svg',
+          'assets/icons/charts/charts.svg',
           height: 64,
           width: 64,
           fit: BoxFit.contain,

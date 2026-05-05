@@ -1,14 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:starsim_app/screens/auth/signup.dart';
-import 'package:starsim_app/screens/main/primary.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'firebase_options.dart';
+
+import 'package:starsim_app/screens/auth/signup.dart';
+import 'package:starsim_app/screens/main/primary.dart';
 import 'widgets/background.dart';
 import 'widgets/logo.dart';
 import 'screens/auth/signin.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -20,7 +30,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-
       home: const AppRoot(),
     );
   }
@@ -31,7 +40,12 @@ class AppRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: const [Background(), SplashWrapper()]);
+    return Stack(
+      children: const [
+        Background(),
+        SplashWrapper(),
+      ],
+    );
   }
 }
 
@@ -51,31 +65,38 @@ class _SplashWrapperState extends State<SplashWrapper> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        setState(() {
-          screen = Navigation.signIn;
-        });
-      }
+    _checkAuth();
+
+    // keep your splash delay
+    Timer(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      _checkAuth();
+    });
+  }
+
+  void _checkAuth() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    setState(() {
+      screen = user != null ? Navigation.primary : Navigation.signIn;
     });
   }
 
   void goToSignUp() {
-    setState(() {
-      screen = Navigation.signUp;
-    });
+    setState(() => screen = Navigation.signUp);
   }
 
   void goToSignIn() {
-    setState(() {
-      screen = Navigation.signIn;
-    });
+    setState(() => screen = Navigation.signIn);
   }
 
   void goToPrimary() {
-    setState(() {
-      screen = Navigation.primary;
-    });
+    setState(() => screen = Navigation.primary);
+  }
+
+  void logout() async {
+    await FirebaseAuth.instance.signOut();
+    setState(() => screen = Navigation.signIn);
   }
 
   @override
@@ -104,15 +125,18 @@ class _SplashWrapperState extends State<SplashWrapper> {
       type: MaterialType.transparency,
       child: switch (screen) {
         Navigation.logo => const Logo(),
+
         Navigation.signIn => SignInPage(
           onNavigateToSignUp: goToSignUp,
           onLoginSuccess: goToPrimary,
         ),
+
         Navigation.signUp => SignUpPage(
           onNavigateToSignIn: goToSignIn,
           onLoginSuccess: goToPrimary,
         ),
-        Navigation.primary => const PrimaryPage(),
+
+        Navigation.primary => PrimaryPage(),
       },
     );
   }

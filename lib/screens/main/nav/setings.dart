@@ -17,7 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SvgPicture.asset(
-          'assets/icons/settings.svg',
+          'assets/icons/settings/settings.svg',
           height: 64,
           width: 64,
           fit: BoxFit.contain,

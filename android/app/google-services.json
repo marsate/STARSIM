@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "388120889700",
+    "project_id": "starsimapp",
+    "storage_bucket": "starsimapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388120889700:android:321d9cb79c7aa28c42d271",
+        "android_client_info": {
+          "package_name": "com.example.starsim_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9p8eW0QR0nN4D0T6GkT0p1QLMYI7QqyU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
