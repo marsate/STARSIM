@@ -82,9 +82,8 @@ class _PrimaryPageState extends State<PrimaryPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: Center(
+      minimum: const EdgeInsets.all(24),
+      child: Center(
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Column(
@@ -187,7 +186,6 @@ class _PrimaryPageState extends State<PrimaryPage> {
             },
           ),
         ),
-      ),
     );
   }
 }
