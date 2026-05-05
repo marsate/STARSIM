@@ -83,7 +83,7 @@ class _PrimaryPageState extends State<PrimaryPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.symmetric(horizontal: 24),
         child: Center(
           child: LayoutBuilder(
             builder: (context, constraints) {
