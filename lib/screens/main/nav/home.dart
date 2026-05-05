@@ -36,9 +36,24 @@ class _ActionTileState extends State<ActionTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTapCancel: () => setState(() => _pressed = false),
+      onTap: () {
+        
+      },
+
+      onTapDown: (_) {
+        setState(() => _pressed = true);
+      },
+
+      onTapUp: (_) {
+        Future.delayed(const Duration(milliseconds: 80), () {
+          if (mounted) setState(() => _pressed = false);
+        });
+      },
+
+      onTapCancel: () {
+        setState(() => _pressed = false);
+      },
+
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
