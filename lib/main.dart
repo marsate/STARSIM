@@ -45,11 +45,17 @@ class AppRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Stack(
-      children: [
-        Background(),
-        SplashWrapper(),
-      ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: const Stack(
+        children: [
+          Background(),
+          SplashWrapper(),
+        ],
+      ),
     );
   }
 }
