@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,7 +8,6 @@ import 'firebase_options.dart';
 import 'package:starsim_app/screens/auth/signup.dart';
 import 'package:starsim_app/screens/main/primary.dart';
 import 'widgets/background.dart';
-import 'widgets/logo.dart';
 import 'screens/auth/signin.dart';
 
 void main() async {
@@ -18,6 +15,13 @@ void main() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+    ),
   );
 
   runApp(const MyApp());
@@ -41,8 +45,8 @@ class AppRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [
+    return const Stack(
+      children: [
         Background(),
         SplashWrapper(),
       ],
@@ -50,7 +54,7 @@ class AppRoot extends StatelessWidget {
   }
 }
 
-enum Navigation { logo, signIn, signUp, primary }
+enum Navigation { signIn, signUp, primary }
 
 class SplashWrapper extends StatefulWidget {
   const SplashWrapper({super.key});
@@ -60,26 +64,18 @@ class SplashWrapper extends StatefulWidget {
 }
 
 class _SplashWrapperState extends State<SplashWrapper> {
-  Navigation screen = Navigation.logo;
+  Navigation screen = Navigation.signIn;
 
   @override
   void initState() {
     super.initState();
 
-    _checkAuth();
-
-    // keep your splash delay
-    Timer(const Duration(seconds: 3), () {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
       if (!mounted) return;
-      _checkAuth();
-    });
-  }
 
-  void _checkAuth() {
-    final user = FirebaseAuth.instance.currentUser;
-
-    setState(() {
-      screen = user != null ? Navigation.primary : Navigation.signIn;
+      setState(() {
+        screen = user != null ? Navigation.primary : Navigation.signIn;
+      });
     });
   }
 
@@ -125,17 +121,15 @@ class _SplashWrapperState extends State<SplashWrapper> {
     return Material(
       type: MaterialType.transparency,
       child: switch (screen) {
-        Navigation.logo => const Logo(),
-
         Navigation.signIn => SignInPage(
-          onNavigateToSignUp: goToSignUp,
-          onLoginSuccess: goToPrimary,
-        ),
+            onNavigateToSignUp: goToSignUp,
+            onLoginSuccess: goToPrimary,
+          ),
 
         Navigation.signUp => SignUpPage(
-          onNavigateToSignIn: goToSignIn,
-          onLoginSuccess: goToPrimary,
-        ),
+            onNavigateToSignIn: goToSignIn,
+            onLoginSuccess: goToPrimary,
+          ),
 
         Navigation.primary => PrimaryPage(),
       },
