@@ -9,7 +9,128 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+class ActionTileData {
+  final String title;
+  final String iconPath;
+  final List<Color> gradient;
+
+  ActionTileData({
+    required this.title,
+    required this.iconPath,
+    required this.gradient,
+  });
+}
+
+class ActionTile extends StatefulWidget {
+  final ActionTileData data;
+
+  const ActionTile({super.key, required this.data});
+
+  @override
+  State<ActionTile> createState() => _ActionTileState();
+}
+
+class _ActionTileState extends State<ActionTile> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: widget.data.gradient,
+            begin: Alignment.topLeft,
+            end: Alignment.topRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      widget.data.iconPath,
+                      height: 24,
+                      width: 24,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.data.title,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 120),
+                  opacity: _pressed ? 0.3 : 0.0,
+                  child: Container(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _HomePageState extends State<HomePage> {
+  Widget tile(ActionTileData data) {
+    return SizedBox(
+      width: double.infinity,
+      child: ActionTile(data: data),
+    );
+  }
+
+  Widget twoTiles(List<ActionTileData> items) {
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Expanded(child: tile(items[0])),
+          const SizedBox(width: 12),
+          Expanded(child: tile(items[1])),
+        ],
+      ),
+    );
+  }
+
+  Widget threeTiles(List<ActionTileData> items) {
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Expanded(child: tile(items[0])),
+          const SizedBox(width: 12),
+          Expanded(child: tile(items[1])),
+          const SizedBox(width: 12),
+          Expanded(child: tile(items[2])),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -157,107 +278,32 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(236, 72, 153, 1),
-                                      Color.fromRGBO(244, 63, 94, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/record_song.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Record Song',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(168, 85, 247, 1),
-                                      Color.fromRGBO(139, 92, 246, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/release_song.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Release Song',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromRGBO(59, 130, 246, 1),
-                                Color.fromRGBO(6, 182, 212, 1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.topRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
+                        twoTiles([
+                          ActionTileData(
+                            title: 'Record Song',
+                            iconPath: 'assets/icons/home/record_song.svg',
+                            gradient: [
+                              Color.fromRGBO(236, 72, 153, 1),
+                              Color.fromRGBO(244, 63, 94, 1),
+                            ],
                           ),
-                          child: Column(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/icons/home/sell.svg',
-                                height: 24,
-                                width: 24,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Sell Song',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
+                          ActionTileData(
+                            title: 'Release Song',
+                            iconPath: 'assets/icons/home/release_song.svg',
+                            gradient: [
+                              Color.fromRGBO(168, 85, 247, 1),
+                              Color.fromRGBO(139, 92, 246, 1),
+                            ],
+                          ),
+                        ]),
+                        SizedBox(height: 12),
+                        tile(
+                          ActionTileData(
+                            title: 'Sell Song',
+                            iconPath: 'assets/icons/home/sell.svg',
+                            gradient: [
+                              Color.fromRGBO(59, 130, 246, 1),
+                              Color.fromRGBO(6, 182, 212, 1),
                             ],
                           ),
                         ),
@@ -298,121 +344,33 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color.fromRGBO(99, 102, 241, 1),
-                                        Color.fromRGBO(168, 85, 247, 1),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.topRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/home/album.svg',
-                                        height: 24,
-                                        width: 24,
-                                        colorFilter: ColorFilter.mode(
-                                          Colors.white,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Release Album',
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color.fromRGBO(139, 92, 246, 1),
-                                        Color.fromRGBO(217, 70, 239, 1),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.topRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/home/alternatives_album.svg',
-                                        height: 24,
-                                        width: 24,
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Album Versions',
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color.fromRGBO(168, 85, 247, 1),
-                                        Color.fromRGBO(236, 72, 153, 1),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.topRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/home/sell.svg',
-                                        height: 24,
-                                        width: 24,
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Sell Album',
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                        threeTiles([
+                          ActionTileData(
+                            title: 'Release Album',
+                            iconPath: 'assets/icons/home/album.svg',
+                            gradient: [
+                              Color.fromRGBO(99, 102, 241, 1),
+                              Color.fromRGBO(168, 85, 247, 1),
                             ],
                           ),
-                        ),
+                          ActionTileData(
+                            title: 'Album Versions',
+                            iconPath:
+                                'assets/icons/home/alternatives_album.svg',
+                            gradient: [
+                              Color.fromRGBO(139, 92, 246, 1),
+                              Color.fromRGBO(217, 70, 239, 1),
+                            ],
+                          ),
+                          ActionTileData(
+                            title: 'Sell Album',
+                            iconPath: 'assets/icons/home/sell.svg',
+                            gradient: [
+                              Color.fromRGBO(168, 85, 247, 1),
+                              Color.fromRGBO(236, 72, 153, 1),
+                            ],
+                          ),
+                        ]),
                       ],
                     ),
                     SizedBox(height: 24),
@@ -450,110 +408,35 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromRGBO(59, 130, 246, 1),
-                                Color.fromRGBO(99, 102, 241, 1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.topRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/icons/home/radio.svg',
-                                height: 24,
-                                width: 24,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Radio',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
+                        tile(
+                          ActionTileData(
+                            title: 'Radio',
+                            iconPath: 'assets/icons/home/radio.svg',
+                            gradient: [
+                              Color.fromRGBO(59, 130, 246, 1),
+                              Color.fromRGBO(99, 102, 241, 1),
                             ],
                           ),
                         ),
                         SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(249, 115, 22, 1),
-                                      Color.fromRGBO(239, 68, 68, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/billboards.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Billboards',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(234, 179, 8, 1),
-                                      Color.fromRGBO(249, 115, 22, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/opportunities.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Opportunities',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        twoTiles([
+                          ActionTileData(
+                            title: 'Billboards',
+                            iconPath: 'assets/icons/home/billboards.svg',
+                            gradient: [
+                              Color.fromRGBO(249, 115, 22, 1),
+                              Color.fromRGBO(239, 68, 68, 1),
+                            ],
+                          ),
+                          ActionTileData(
+                            title: 'Opportunities',
+                            iconPath: 'assets/icons/home/opportunities.svg',
+                            gradient: [
+                              Color.fromRGBO(234, 179, 8, 1),
+                              Color.fromRGBO(249, 115, 22, 1),
+                            ],
+                          ),
+                        ]),
                       ],
                     ),
                     SizedBox(height: 24),
@@ -591,144 +474,43 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromRGBO(34, 197, 94, 1),
-                                Color.fromRGBO(16, 185, 129, 1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.topRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/icons/home/vibely.svg',
-                                height: 24,
-                                width: 24,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Vibely',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
+                        tile(
+                          ActionTileData(
+                            title: 'Vibely',
+                            iconPath: 'assets/icons/home/vibely.svg',
+                            gradient: [
+                              Color.fromRGBO(34, 197, 94, 1),
+                              Color.fromRGBO(16, 185, 129, 1),
                             ],
                           ),
                         ),
                         SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(239, 68, 68, 1),
-                                      Color.fromRGBO(236, 72, 153, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/meloflow.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Meloflow',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(249, 115, 22, 1),
-                                      Color.fromRGBO(245, 158, 11, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/sonicflow.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'SonicFlow',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(220, 38, 38, 1),
-                                      Color.fromRGBO(249, 115, 22, 1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/home/velor.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Velor',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        threeTiles([
+                          ActionTileData(
+                            title: 'Meloflow',
+                            iconPath: 'assets/icons/home/meloflow.svg',
+                            gradient: [
+                              Color.fromRGBO(239, 68, 68, 1),
+                              Color.fromRGBO(236, 72, 153, 1),
+                            ],
+                          ),
+                          ActionTileData(
+                            title: 'SonicFlow',
+                            iconPath: 'assets/icons/home/sonicflow.svg',
+                            gradient: [
+                              Color.fromRGBO(249, 115, 22, 1),
+                              Color.fromRGBO(245, 158, 11, 1),
+                            ],
+                          ),
+                          ActionTileData(
+                            title: 'Velor',
+                            iconPath: 'assets/icons/home/velor.svg',
+                            gradient: [
+                              Color.fromRGBO(220, 38, 38, 1),
+                              Color.fromRGBO(249, 115, 22, 1),
+                            ],
+                          ),
+                        ]),
                       ],
                     ),
                   ],
