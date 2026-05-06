@@ -36,9 +36,7 @@ class _ActionTileState extends State<ActionTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        
-      },
+      onTap: () {},
 
       onTapDown: (_) {
         setState(() => _pressed = true);
@@ -101,7 +99,7 @@ class _ActionTileState extends State<ActionTile> {
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 120),
                   opacity: _pressed ? 0.3 : 0.0,
-                  child: Container(color: Colors.white),
+                  child: Container(color: Colors.black),
                 ),
               ),
             ),
